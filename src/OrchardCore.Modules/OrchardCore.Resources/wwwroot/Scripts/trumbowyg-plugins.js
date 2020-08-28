@@ -198,6 +198,102 @@
   });
 })(jQuery);
 /* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+(function ($) {
+  'use strict';
+
+  function checkValidTags(snippet) {
+    var theString = snippet; // Replace uppercase element names with lowercase
+
+    theString = theString.replace(/<[^> ]*/g, function (match) {
+      return match.toLowerCase();
+    }); // Replace uppercase attribute names with lowercase
+
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ [^=]+=/g, function (match2) {
+        return match2.toLowerCase();
+      });
+      return match;
+    }); // Put quotes around unquoted attributes
+
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
+      return match;
+    });
+    return theString;
+  }
+
+  function cleanIt(html) {
+    // first make sure all tags and attributes are made valid
+    html = checkValidTags(html); // Replace opening bold tags with strong
+
+    html = html.replace(/<b(\s+|>)/g, '<strong$1'); // Replace closing bold tags with closing strong
+
+    html = html.replace(/<\/b(\s+|>)/g, '</strong$1'); // Replace italic tags with em
+
+    html = html.replace(/<i(\s+|>)/g, '<em$1'); // Replace closing italic tags with closing em
+
+    html = html.replace(/<\/i(\s+|>)/g, '</em$1'); // strip out comments -cgCraft
+
+    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, ''); // strip out &nbsp; -cgCraft
+
+    html = html.replace(/&nbsp;/gi, ' '); // strip out extra spaces -cgCraft
+
+    html = html.replace(/ <\//gi, '</'); // Remove multiple spaces
+
+    html.replace(/\s+/g, ' '); // strip &nbsp; -cgCraft
+
+    html = html.replace(/^\s*|\s*$/g, ''); // Strip out unaccepted attributes
+
+    html = html.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
+        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
+          return match2;
+        }
+
+        return '';
+      });
+      return match;
+    }); // Final clean out for MS Word crud
+
+    html = html.replace(/<\?xml[^>]*>/g, '');
+    html = html.replace(/<[^ >]+:[^>]*>/g, '');
+    html = html.replace(/<\/[^ >]+:[^>]*>/g, ''); // remove unwanted tags
+
+    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
+    return html;
+  } // clean editor
+  // this will clean the inserted contents
+  // it does a compare, before and after paste to determine the
+  // pasted contents
+
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function () {
+            setTimeout(function () {
+              try {
+                trumbowyg.$ed.html(cleanIt(trumbowyg.$ed.html()));
+              } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
  * trumbowyg.colors.js v1.2
  * Colors picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -430,102 +526,6 @@
 
     return dropdown;
   }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-(function ($) {
-  'use strict';
-
-  function checkValidTags(snippet) {
-    var theString = snippet; // Replace uppercase element names with lowercase
-
-    theString = theString.replace(/<[^> ]*/g, function (match) {
-      return match.toLowerCase();
-    }); // Replace uppercase attribute names with lowercase
-
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ [^=]+=/g, function (match2) {
-        return match2.toLowerCase();
-      });
-      return match;
-    }); // Put quotes around unquoted attributes
-
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
-      return match;
-    });
-    return theString;
-  }
-
-  function cleanIt(html) {
-    // first make sure all tags and attributes are made valid
-    html = checkValidTags(html); // Replace opening bold tags with strong
-
-    html = html.replace(/<b(\s+|>)/g, '<strong$1'); // Replace closing bold tags with closing strong
-
-    html = html.replace(/<\/b(\s+|>)/g, '</strong$1'); // Replace italic tags with em
-
-    html = html.replace(/<i(\s+|>)/g, '<em$1'); // Replace closing italic tags with closing em
-
-    html = html.replace(/<\/i(\s+|>)/g, '</em$1'); // strip out comments -cgCraft
-
-    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, ''); // strip out &nbsp; -cgCraft
-
-    html = html.replace(/&nbsp;/gi, ' '); // strip out extra spaces -cgCraft
-
-    html = html.replace(/ <\//gi, '</'); // Remove multiple spaces
-
-    html.replace(/\s+/g, ' '); // strip &nbsp; -cgCraft
-
-    html = html.replace(/^\s*|\s*$/g, ''); // Strip out unaccepted attributes
-
-    html = html.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
-        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
-          return match2;
-        }
-
-        return '';
-      });
-      return match;
-    }); // Final clean out for MS Word crud
-
-    html = html.replace(/<\?xml[^>]*>/g, '');
-    html = html.replace(/<[^ >]+:[^>]*>/g, '');
-    html = html.replace(/<\/[^ >]+:[^>]*>/g, ''); // remove unwanted tags
-
-    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
-    return html;
-  } // clean editor
-  // this will clean the inserted contents
-  // it does a compare, before and after paste to determine the
-  // pasted contents
-
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function () {
-            setTimeout(function () {
-              try {
-                trumbowyg.$ed.html(cleanIt(trumbowyg.$ed.html()));
-              } catch (c) {}
-            }, 0);
-          });
-        }
-      }
-    }
-  });
 })(jQuery);
 /* ===========================================================
  * trumbowyg.emoji.js v0.1
@@ -1715,109 +1715,6 @@
   });
 })(jQuery);
 /* ===========================================================
- * trumbowyg.noembed.js v1.0
- * noEmbed plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Jake Johns (jakejohns)
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    proxy: 'https://noembed.com/embed?nowrap=on',
-    urlFiled: 'url',
-    data: [],
-    success: undefined,
-    error: undefined
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        noembed: 'Noembed',
-        noembedError: 'Error'
-      },
-      da: {
-        noembedError: 'Fejl'
-      },
-      sk: {
-        noembedError: 'Chyba'
-      },
-      fr: {
-        noembedError: 'Erreur'
-      },
-      cs: {
-        noembedError: 'Chyba'
-      },
-      ru: {
-        noembedError: 'Ошибка'
-      },
-      ja: {
-        noembedError: 'エラー'
-      },
-      tr: {
-        noembedError: 'Hata'
-      },
-      zh_tw: {
-        noembed: '插入影片',
-        noembedError: '錯誤'
-      },
-      pt_br: {
-        noembed: 'Incorporar',
-        noembedError: 'Erro'
-      },
-      ko: {
-        noembed: 'oEmbed 넣기',
-        noembedError: '에러'
-      } // jshint camelcase:true
-
-    },
-    plugins: {
-      noembed: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
-          var btnDef = {
-            fn: function fn() {
-              var $modal = trumbowyg.openModalInsert( // Title
-              trumbowyg.lang.noembed, // Fields
-              {
-                url: {
-                  label: 'URL',
-                  required: true
-                }
-              }, // Callback
-              function (data) {
-                $.ajax({
-                  url: trumbowyg.o.plugins.noembed.proxy,
-                  type: 'GET',
-                  data: data,
-                  cache: false,
-                  dataType: 'json',
-                  success: trumbowyg.o.plugins.noembed.success || function (data) {
-                    if (data.html) {
-                      trumbowyg.execCmd('insertHTML', data.html);
-                      setTimeout(function () {
-                        trumbowyg.closeModal();
-                      }, 250);
-                    } else {
-                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
-                    }
-                  },
-                  error: trumbowyg.o.plugins.noembed.error || function () {
-                    trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
-                  }
-                });
-              });
-            }
-          };
-          trumbowyg.addBtnDef('noembed', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
  * trumbowyg.mention.js v0.1
  * Mention plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -1927,49 +1824,103 @@
   }
 })(jQuery);
 /* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
+ * trumbowyg.noembed.js v1.0
+ * noEmbed plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
+ * Author : Jake Johns (jakejohns)
  */
 (function ($) {
   'use strict';
 
+  var defaultOptions = {
+    proxy: 'https://noembed.com/embed?nowrap=on',
+    urlFiled: 'url',
+    data: [],
+    success: undefined,
+    error: undefined
+  };
   $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        noembed: 'Noembed',
+        noembedError: 'Error'
+      },
+      da: {
+        noembedError: 'Fejl'
+      },
+      sk: {
+        noembedError: 'Chyba'
+      },
+      fr: {
+        noembedError: 'Erreur'
+      },
+      cs: {
+        noembedError: 'Chyba'
+      },
+      ru: {
+        noembedError: 'Ошибка'
+      },
+      ja: {
+        noembedError: 'エラー'
+      },
+      tr: {
+        noembedError: 'Hata'
+      },
+      zh_tw: {
+        noembed: '插入影片',
+        noembedError: '錯誤'
+      },
+      pt_br: {
+        noembed: 'Incorporar',
+        noembedError: 'Erro'
+      },
+      ko: {
+        noembed: 'oEmbed 넣기',
+        noembedError: '에러'
+      } // jshint camelcase:true
+
+    },
     plugins: {
-      pasteImage: {
+      noembed: {
         init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                  mustPreventDefault = false,
-                  reader;
-
-              for (var i = items.length - 1; i >= 0; i -= 1) {
-                if (items[i].type.match(/^image\//)) {
-                  reader = new FileReader();
-                  /* jshint -W083 */
-
-                  reader.onloadend = function (event) {
-                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
-                  };
-                  /* jshint +W083 */
-
-
-                  reader.readAsDataURL(items[i].getAsFile());
-                  mustPreventDefault = true;
+          trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
+          var btnDef = {
+            fn: function fn() {
+              var $modal = trumbowyg.openModalInsert( // Title
+              trumbowyg.lang.noembed, // Fields
+              {
+                url: {
+                  label: 'URL',
+                  required: true
                 }
-              }
-
-              if (mustPreventDefault) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-              }
-            } catch (c) {}
-          });
+              }, // Callback
+              function (data) {
+                $.ajax({
+                  url: trumbowyg.o.plugins.noembed.proxy,
+                  type: 'GET',
+                  data: data,
+                  cache: false,
+                  dataType: 'json',
+                  success: trumbowyg.o.plugins.noembed.success || function (data) {
+                    if (data.html) {
+                      trumbowyg.execCmd('insertHTML', data.html);
+                      setTimeout(function () {
+                        trumbowyg.closeModal();
+                      }, 250);
+                    } else {
+                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
+                    }
+                  },
+                  error: trumbowyg.o.plugins.noembed.error || function () {
+                    trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
+                  }
+                });
+              });
+            }
+          };
+          trumbowyg.addBtnDef('noembed', btnDef);
         }
       }
     }
@@ -2059,6 +2010,55 @@
                     }
                   }
                 });
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
+                  mustPreventDefault = false,
+                  reader;
+
+              for (var i = items.length - 1; i >= 0; i -= 1) {
+                if (items[i].type.match(/^image\//)) {
+                  reader = new FileReader();
+                  /* jshint -W083 */
+
+                  reader.onloadend = function (event) {
+                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
+                  };
+                  /* jshint +W083 */
+
+
+                  reader.readAsDataURL(items[i].getAsFile());
+                  mustPreventDefault = true;
+                }
+              }
+
+              if (mustPreventDefault) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
               }
             } catch (c) {}
           });
@@ -2494,6 +2494,74 @@
   });
 })(jQuery);
 /* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    symbolList: [// currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
+    '00A9', '00AE', '2122', null, // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      ko: {
+        specialChars: '특수문자'
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+        }
+      }
+    }
+  });
+
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+
+      var btn = symbol.replace(/:/g, ''),
+          defaultSymbolBtnName = 'symbol-' + btn,
+          defaultSymbolBtnDef = {
+        text: symbol,
+        hasIcon: false,
+        fn: function fn() {
+          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+          trumbowyg.execCmd('insertText', encodedSymbol);
+          return true;
+        }
+      };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
  * trumbowyg.table.custom.js v2.0
  * Table plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -2882,74 +2950,6 @@
       }
     }
   });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    symbolList: [// currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
-    '00A9', '00AE', '2122', null, // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: 'Special characters'
-      },
-      fr: {
-        specialChars: 'Caractères spéciaux'
-      },
-      ko: {
-        specialChars: '특수문자'
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
-          };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
-        }
-      }
-    }
-  });
-
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
-
-      var btn = symbol.replace(/:/g, ''),
-          defaultSymbolBtnName = 'symbol-' + btn,
-          defaultSymbolBtnDef = {
-        text: symbol,
-        hasIcon: false,
-        fn: function fn() {
-          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-          trumbowyg.execCmd('insertText', encodedSymbol);
-          return true;
-        }
-      };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
-    });
-    return dropdown;
-  }
 })(jQuery);
 (function ($) {
   'use strict'; // Adds the language variables
