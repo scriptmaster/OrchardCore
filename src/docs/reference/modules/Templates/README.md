@@ -349,3 +349,26 @@ Views/Shared/{0}.cshtml
 For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`.  
 For this particular file, you would also need to select the `Use site theme for login page`
 option under the `Configuration->Login` page in the admin.
+
+
+### Overriding theme Layout & Custom layout templates
+
+To override the present theme's `Layout.cshtml` you may create a template named `Layout`.  The Layout can start with doctype and html tags and can contain Layout liquid tags documented here: https://docs.orchardcore.net/en/dev/docs/reference/modules/Liquid/#layout-tags
+
+#### Custom Layout templates for specific Content Types
+
+Instead of overriding the present theme's Layout you may choose to override only a specific Content Type's layout. For example, let's say you have created a content type named 'MyContentType', to show a custom layout and render the content differently, you may create two templates, one for the layout named 'MyContentTypeLayout' and the another named `Content__MyContentType` for rendering the content item using the Layout you just created for customization.
+
+Template 1: `MyContentTypeLayout`
+```
+<!doctype>
+<html ...
+</html>
+```
+
+Template 2: `Content__MyContentType`
+```
+{% layout "MyContentTypeLayout" %}
+
+Rendered whenever MyContentType item is viewed, with the layout specified above
+```
