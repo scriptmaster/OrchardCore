@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ Culture.Name }}">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% page_title Site.SiteName, position: "before", separator: " - " %}</title>
+
+    {% style src:'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css' %}
+    {% style src:'https://fonts.googleapis.com/icon?family=Material+Icons' %}
+    {% style name:'site-styles' %}
+
+    {% script src:'https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js', at:"Foot" %}
+
+    {% resources type: "Meta" %}
+    {% resources type: "HeadLink" %}
+    {% resources type: "Stylesheet" %}
+    {% resources type: "HeadScript" %}
+
+    {% render_section "HeadMeta", required: false %}
+</head>
+<body dir="{{Culture.Dir}}">
+    <nav class="blue darken-3">
+        <div class="nav-wrapper container">
+            <a href="{{ Site.BaseUrl }}" class="brand-logo">{{ Site.SiteName }}</a>
+            {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_expires_after: "00:05:00", cache_tag: "alias:main-menu" %}
+        </div>
+    </nav>
+    {% render_section "Header", required: false %}
+    <main>
+        {% render_section "Messages", required: false %}
+        {% render_body %}
+    </main>
+    {% render_section "Footer", required: false %}
+    {% resources type: "FootScript" %}
+</body>
+</html>
