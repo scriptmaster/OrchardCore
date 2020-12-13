@@ -75,13 +75,9 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapModifiedDateProvider, DefaultSitemapModifiedDateProvider>();
             services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
 
-            services.AddScoped<ISitemapPartContentItemValidationProvider, SitemapPartContentItemValidationProvider>();
-            services.AddScoped<ISitemapContentItemValidationProvider>(serviceProvider =>
-                serviceProvider.GetRequiredService<ISitemapPartContentItemValidationProvider>());
-
             // Sitemap Part.
             services.AddContentPart<SitemapPart>()
-                .UseDisplayDriver<SitemapPartDisplay>()
+                .UseDisplayDriver<SitemapPartDisplayDriver>()
                 .AddHandler<SitemapPartHandler>();
         }
 

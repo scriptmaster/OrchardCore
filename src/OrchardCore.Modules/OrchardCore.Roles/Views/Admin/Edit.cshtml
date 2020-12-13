@@ -1,7 +1,7 @@
 @model EditRoleViewModel
 @using OrchardCore.Roles.ViewModels;
 
-<h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1></zone>
 
 <form autocomplete="off">
 
@@ -25,10 +25,10 @@
     <h5>@T["Role permissions"]</h5>
 
     <div class="properties ml-2">
-        @T["Allow"] <span class="hint">— @T["Permission is granted explicitly."]</span>
+        @T["Allow"] <span class="hint dashed">@T["Permission is granted explicitly."]</span>
     </div>
     <div class="properties ml-2">
-        @T["Effective"] <span class="hint">— @T["Permission is implied by a higher level permission, or explicitly granted."]</span>
+        @T["Effective"] <span class="hint dashed">@T["Permission is implied by a higher level permission, or explicitly granted."]</span>
     </div>
     <hr>
 

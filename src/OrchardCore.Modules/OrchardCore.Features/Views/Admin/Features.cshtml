@@ -2,11 +2,8 @@
 @using OrchardCore.Modules;
 @model FeaturesViewModel
 
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Features"])</h1>
-    </div>
-</div>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Features"])</h1></zone>
+
 <form autocomplete="off" class="position-sticky action-bar">
     <div class="card mb-3">
         <div class="card-body bg-primary p-3">
@@ -121,7 +118,7 @@
                                     <div class="col-md-2 text-right">
                                         @if (showEnable && !feature.IsEnabled)
                                         {
-                                            <a id="btn-enable-@feature.Descriptor.Id" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                                            <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
                                         }
                                         @if (showDisable && feature.IsEnabled)
                                         {
@@ -131,7 +128,7 @@
                                                 var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
                                                 confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
                                             }
-                                            <a id="btn-disable-@feature.Descriptor.Id" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                            <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" itemprop="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                         }
                                     </div>
                                 </div>
@@ -139,11 +136,11 @@
                         }
                     }
                 </ul>
-                <div id="list-alert" class="alert alert-info d-none" role="alert">
-                    @T["<strong>Nothing here!</strong> Your search returned no results."]
-                </div>
             </div>
         }
+        <div id="list-alert" class="alert alert-info d-none" role="alert">
+            @T["<strong>Nothing here!</strong> Your search returned no results."]
+        </div>
     }
 </form>
 <script at="Foot">

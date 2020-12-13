@@ -62,14 +62,6 @@ body {
 
 // END OF LAYOUT
 
-// Toolbar
-// ------------------------------
-.admin-toolbar {
-    @extend .navbar, .navbar-expand-md, .navbar-light;
-    margin-bottom: 1em;
-    background-color: $gray-200;
-}
-
 // Sortable
 // ------------------------------
 .ui-sortable {
@@ -102,4 +94,12 @@ body {
 .action-bar {
     top: 3.3rem;
     z-index: $zindex-sticky;
+}
+
+.list-group-item+.list-group-item {
+    border-top-width: 0px;
+}
+
+svg {
+    vertical-align: -.125em;
 }

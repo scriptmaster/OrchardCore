@@ -2,7 +2,7 @@
 @{
     int i = 0;
 }
-<h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1>
+<zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1></zone>
 
 <form asp-action="AddReusablePartTo">
     @Html.ValidationSummary()
@@ -37,7 +37,7 @@
                             <label class="custom-control-label" asp-for="PartSelections[i].PartName">@partSelection.PartDisplayName</label>
                             @if (!String.IsNullOrEmpty(partSelection.PartDescription))
                             {
-                                <span class="hint">— @partSelection.PartDescription</span>
+                                <span class="hint dashed">@partSelection.PartDescription</span>
                             }
                         </div>
                     </li>
